@@ -20,6 +20,8 @@ workflows:
         inputs:
           - keychain_path: "$HOME/Library/Keychains/login.keychain-db"
           - keychain_password: "$BITRISE_KEYCHAIN_PASSWORD"
+          - certificate_url: "file://./ios/App/distribution.p12"
+          - certificate_passphrase: "$CERTIFICATE_PASSWORD"
     - npm@1:
         inputs:
         - command: install
@@ -49,4 +51,6 @@ meta:
     machine_type_id: g2-m1.4core
 app:
   envs:
-  - BITRISE_KEYCHAIN_PASSWORD: 123456
+  - BITRISE_KEYCHAIN_PASSWORD: anything
+  - BITRISE_TEAM_ID: 22X77ENQ2H
+  - CERTIFICATE_PASSWORD: 123456
