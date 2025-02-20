@@ -1,4 +1,3 @@
----
 format_version: '13'
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 project_type: ionic
@@ -6,16 +5,44 @@ workflows:
   deploy:
     steps:
     - git-clone@8: {}
-    - certificate-and-profile-installer@1: {}
+    - script@1:
+        title: Create Keychain
+        inputs:
+          - content: |-
+              #!/bin/bash
+              set -ex
+              security delete-keychain login.keychain-db || true
+              security create-keychain -p "$BITRISE_KEYCHAIN_PASSWORD" login.keychain-db
+              security default-keychain -s login.keychain-db
+              security unlock-keychain -p "$BITRISE_KEYCHAIN_PASSWORD" login.keychain-db
+              security set-keychain-settings -t 3600 -l login.keychain-db
+    - certificate-and-profile-installer@1:
+        inputs:
+          - keychain_path: "$HOME/Library/Keychains/login.keychain-db"
+          - keychain_password: "$BITRISE_KEYCHAIN_PASSWORD"
     - npm@1:
         inputs:
         - command: install
-    - karma-jasmine-runner@0: {}
-    - generate-cordova-build-configuration@0: {}
-    - ionic-archive@2:
+    - script@1:
+        title: Build Ionic Project
         inputs:
-        - platform: "$IONIC_PLATFORM"
-        - target: emulator
+          - content: |-
+              #!/bin/bash
+              set -ex
+              ionic build
+              ionic cap add ios
+              ionic cap sync ios
+    - xcode-archive@5:
+        inputs:
+          - project_path: "$BITRISE_SOURCE_DIR/ios/App/App.xcodeproj"
+          - scheme: App
+          - distribution_method: app-store
+          - automatic_code_signing: api-key
+          - configuration: Release
+    - deploy-to-itunesconnect-deliver@2:
+        inputs:
+          - ipa_path: "$BITRISE_IPA_PATH"
+          - bundle_id: "$BITRISE_APP_BUNDLE_ID"
     - deploy-to-bitrise-io@2: {}
 meta:
   bitrise.io:
@@ -23,4 +50,4 @@ meta:
     machine_type_id: g2-m1.4core
 app:
   envs:
-  - IONIC_PLATFORM: ios
+  - BITRISE_KEYCHAIN_PASSWORD: 123456
