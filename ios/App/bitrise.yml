@@ -35,7 +35,7 @@ workflows:
               ionic cap sync ios
     - xcode-archive@5:
         inputs:
-          - project_path: "$BITRISE_SOURCE_DIR/ios/App/App.xcodeproj"
+          - project_path: "$BITRISE_SOURCE_DIR/ios/App/App.xcworkspace"
           - scheme: App
           - distribution_method: app-store
           - automatic_code_signing: api-key
