@@ -30,7 +30,6 @@ workflows:
               #!/bin/bash
               set -ex
               ionic build
-              ionic cap add ios
               ionic cap sync ios
     - xcode-archive@5:
         inputs:
