@@ -68,7 +68,7 @@ workflows:
           - content: |-
               #!/bin/bash
               set -ex
-              cd $BITRISE_SOURCE_DIR/ios
+              cd $BITRISE_SOURCE_DIR/ios/App
               # Update iOS build number
               agvtool new-version -all $BITRISE_BUILD_NUMBER
               # Update Flutter build number (pubspec.yaml)
