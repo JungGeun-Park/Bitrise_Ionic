@@ -62,6 +62,19 @@ workflows:
               
               echo "iOS Project Path: $PROJECT_PATH"
               echo "Scheme: $SCHEME"
+    - script@1:
+        title: Update Build Number
+        inputs:
+          - content: |-
+              #!/bin/bash
+              set -ex
+              cd $BITRISE_SOURCE_DIR/ios
+              # Update iOS build number
+              agvtool new-version -all $BITRISE_BUILD_NUMBER
+              # Update Flutter build number (pubspec.yaml)
+              cd ..
+              VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+              sed -i '' "s/^version: .*$/version: $VERSION+$BITRISE_BUILD_NUMBER/" pubspec.yaml              
     - xcode-archive@5:
         inputs:
           - project_path: "$BITRISE_SOURCE_DIR/ios/App/App.xcworkspace"
