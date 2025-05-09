@@ -79,7 +79,7 @@ workflows:
     - xcode-archive@5:
         inputs:
           - project_path: "$BITRISE_SOURCE_DIR/ios/App/App.xcworkspace"
-          - scheme: $SCHEME
+          - scheme: $$BITRISE_SCHEME
           - distribution_method: app-store
           - automatic_code_signing: api-key
           - configuration: Release
